@@ -175,7 +175,54 @@ public class CourseController {
 		res = new CourseRes(student.getId(),student.getName());
 		res.setMessage(CourseRtnCode.SUCCESS.getMessage());
 		return res;
-		
+	}
+	
+	@PostMapping(value = "/api/delete_student")
+	public CourseRes deleteStudent(@RequestBody CourseReq req) {
+		CourseRes res = new CourseRes();
+		if(!StringUtils.hasText(req.getStudentId())) {
+			res.setMessage(CourseRtnCode.ID_REQUIRED.getMessage());
+			return res;
+		}
+		return courseService.deleteStudent(req.getStudentId());
+	}
+	
+	@PostMapping(value = "/api/select_course")
+	public CourseRes selectCourse(@RequestBody CourseReq req) {
+		CourseRes res = new CourseRes();
+		if(!StringUtils.hasText(req.getStudentId())) {
+			res.setMessage(CourseRtnCode.ID_REQUIRED.getMessage());
+			return res;
+		}
+		if(req.getCourseList() == null) {
+			res.setMessage(CourseRtnCode.NO_COURSE_SELECTED.getMessage());
+			return res;
+		}
+		return courseService.courseSelection(req.getStudentId(),req.getCourseList());
+	}
+	
+	@PostMapping(value = "/api/cancel_course")
+	public CourseRes cancelCourse(@RequestBody CourseReq req) {
+		CourseRes res = new CourseRes();
+		if(!StringUtils.hasText(req.getStudentId())) {
+			res.setMessage(CourseRtnCode.ID_REQUIRED.getMessage());
+			return res;
+		}
+		if(req.getCourseList() == null) {
+			res.setMessage(CourseRtnCode.NO_COURSE_SELECTED.getMessage());
+			return res;
+		}
+		return courseService.courseCancel(req.getStudentId(),req.getCourseList());
+	}
+	
+	@PostMapping(value = "/api/find_student_info")
+	public CourseRes findStudentInfo(@RequestBody CourseReq req) {
+		CourseRes res = new CourseRes();
+		if(!StringUtils.hasText(req.getStudentId())) {
+			res.setMessage(CourseRtnCode.ID_REQUIRED.getMessage());
+			return res;
+		}
+		return courseService.findStudentInfo(req.getStudentId());
 	}
 	
 }

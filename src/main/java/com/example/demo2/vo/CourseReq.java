@@ -1,5 +1,7 @@
 package com.example.demo2.vo;
 
+import java.util.List;
+
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class CourseReq {
@@ -20,6 +22,9 @@ public class CourseReq {
 	private Integer end;
 	
 	private Integer credit;
+	
+	@JsonProperty("course_list")
+	private List<String> courseList;
 
 	public CourseReq() {
 		
@@ -32,6 +37,16 @@ public class CourseReq {
 	public String getId() {
 		return id;
 	}
+
+	public List<String> getCourseList() {
+		return courseList;
+	}
+
+
+	public void setCourseList(List<String> courseList) {
+		this.courseList = courseList;
+	}
+
 
 	public String getStudentName() {
 		return studentName;

@@ -16,7 +16,14 @@ public enum CourseRtnCode {
 	ID_NOT_EXIST("400","Id does not exist"),
 	CREDIT_PARAM_ERROR("400","Credit param error"),
 	STUDENT_ID_REQUIRED("400","Student id required"),
-	STUDENT_NAME_REQUIRED("400","Student name required");
+	STUDENT_NAME_REQUIRED("400","Student name required"),
+	STUDENT_ID_NOT_EXIST("400","Student id does not exist"),
+	CLASS_TIME_CONFLICT("403","Course time conflict"),
+	CREDIT_TOTAL_OVER("403","Total credit is more than 10"),
+	COURSE_NOT_EXIST("400","Select course not exist"),
+	NO_COURSE_SELECTED("403","No course is selected"),
+	SAME_COURSE_SELECTED("403","Same name course is selected");
+	
 	
 	private String code;
 	

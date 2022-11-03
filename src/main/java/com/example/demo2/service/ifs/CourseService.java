@@ -24,7 +24,9 @@ public interface CourseService {
 	
 	public CourseRes deleteStudent(String id);
 	
-	public CourseRes courseSelection(List<String> courseSelList);
+	public CourseRes courseSelection(String studentId,List<String> courseSelList);
 	
+	public CourseRes courseCancel(String studentId,List<String> courseDelList);
 	
+	public CourseRes findStudentInfo(String studentId);
 }

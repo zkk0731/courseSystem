@@ -5,20 +5,27 @@ import java.util.List;
 import com.example.demo2.entity.Course;
 import com.example.demo2.entity.Student;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class CourseRes {
 
 	private Course course;
 	
+	@JsonProperty("student_name")
 	private String studentName;
-	
+	@JsonProperty("student_id")
 	private String studentId;
-	
+	@JsonProperty("course_id")
 	private String courseId;
-	private String message;
+	@JsonProperty("total_credit")
+	private Integer totlaCredit;
 	
+	private String message;
+	@JsonProperty("course_list")
 	private List<Course> courseList;
+	@JsonProperty("message_list")
+	private List<String> messageList;
 
 	public CourseRes() {
 		
@@ -27,6 +34,20 @@ public class CourseRes {
 		this.course = course;
 	}
 	
+	
+	
+	public List<String> getMessageList() {
+		return messageList;
+	}
+	public void setMessageList(List<String> messageList) {
+		this.messageList = messageList;
+	}
+	public Integer getTotlaCredit() {
+		return totlaCredit;
+	}
+	public void setTotlaCredit(Integer totlaCredit) {
+		this.totlaCredit = totlaCredit;
+	}
 	public CourseRes(String studentId,String studentName) {
 		this.studentId = studentId;
 		this.studentName = studentName;
