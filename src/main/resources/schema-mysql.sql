@@ -5,10 +5,10 @@ CREATE TABLE IF NOT EXISTS `course` (
   `start` int DEFAULT NULL,
   `end` int DEFAULT NULL,
   `credit` int DEFAULT NULL,
-  PRIMARY KEY (`id`);
+  PRIMARY KEY (`id`));
   
   CREATE TABLE IF NOT EXISTS `student` (
   `id` varchar(20) NOT NULL,
   `name` varchar(20) NOT NULL,
   `courseid` varchar(100) DEFAULT NULL,
-  PRIMARY KEY (`id`);
+  PRIMARY KEY (`id`));

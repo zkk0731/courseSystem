@@ -147,37 +147,72 @@ public class CourseServiceImpl implements CourseService {
 			}
 		}
 		List<String> nonReCourseList = new ArrayList<>(courseSet);
-
-		for (int i = 0; i < nonReCourseList.size(); i++) {
-			if (courseDao.findById(nonReCourseList.get(i)).isPresent()) {
-				Course courseA = courseDao.findById(nonReCourseList.get(i)).get();
-				for (int j = i + 1; j < nonReCourseList.size(); j++) {
-					if (courseDao.findById(nonReCourseList.get(j)).isPresent()) {
-						Course courseB = courseDao.findById(nonReCourseList.get(j)).get();
-						if (courseA.getName().equalsIgnoreCase(courseB.getName())) {
-							courseSet.remove(nonReCourseList.get(j));
-							messageList.add(
-									nonReCourseList.get(j) + " " + CourseRtnCode.SAME_COURSE_SELECTED.getMessage());
-						}
-
-						if (courseA.getDay() == courseB.getDay()) {
-							if (courseA.getStart() <= courseB.getStart() && courseA.getEnd() >= courseB.getStart()) {
-								courseSet.remove(nonReCourseList.get(j));
-								messageList.add(
-										nonReCourseList.get(j) + " " + CourseRtnCode.CLASS_TIME_CONFLICT.getMessage());
-							} else if (courseA.getStart() <= courseB.getEnd() && courseA.getEnd() >= courseB.getEnd()) {
-								courseSet.remove(nonReCourseList.get(j));
-								messageList.add(
-										nonReCourseList.get(j) + " " + CourseRtnCode.CLASS_TIME_CONFLICT.getMessage());
-							}
-						}
-					}
-				}
-			} else {
-				courseSet.remove(nonReCourseList.get(i));
-				messageList.add(nonReCourseList.get(i) + " " + CourseRtnCode.COURSE_NOT_EXIST.getMessage());
+		List<Course> allCourseList = new ArrayList<>();
+		for(String str:nonReCourseList) {
+			Optional<Course> courseOp = courseDao.findById(str);
+			if(courseOp.isPresent()) {
+				allCourseList.add(courseOp.get());
+			}
+			else {
+				courseSet.remove(str);
+				messageList.add(str + " " + CourseRtnCode.COURSE_NOT_EXIST.getMessage());
 			}
 		}
+		
+		for(int i = 0;i<allCourseList.size();i++) {
+			Course courseA = allCourseList.get(i);
+			for(int j=i+1;j<allCourseList.size();j++) {
+				Course courseB = allCourseList.get(j);
+				if (courseA.getName().equalsIgnoreCase(courseB.getName())) {
+					courseSet.remove(nonReCourseList.get(j));
+					messageList.add(
+							nonReCourseList.get(j) + " " + CourseRtnCode.SAME_COURSE_SELECTED.getMessage());
+				}
+				
+				if (courseA.getDay() == courseB.getDay()) {
+					if (courseA.getStart() <= courseB.getStart() && courseA.getEnd() >= courseB.getStart()) {
+						courseSet.remove(nonReCourseList.get(j));
+						messageList.add(
+								nonReCourseList.get(j) + " " + CourseRtnCode.CLASS_TIME_CONFLICT.getMessage());
+					} else if (courseA.getStart() <= courseB.getEnd() && courseA.getEnd() >= courseB.getEnd()) {
+						courseSet.remove(nonReCourseList.get(j));
+						messageList.add(
+								nonReCourseList.get(j) + " " + CourseRtnCode.CLASS_TIME_CONFLICT.getMessage());
+					}
+				}
+			}
+		}
+		
+//		for (int i = 0; i < nonReCourseList.size(); i++) {
+//			if (courseDao.findById(nonReCourseList.get(i)).isPresent()) {
+//				Course courseA = courseDao.findById(nonReCourseList.get(i)).get();
+//				for (int j = i + 1; j < nonReCourseList.size(); j++) {
+//					if (courseDao.findById(nonReCourseList.get(j)).isPresent()) {
+//						Course courseB = courseDao.findById(nonReCourseList.get(j)).get();
+//						if (courseA.getName().equalsIgnoreCase(courseB.getName())) {
+//							courseSet.remove(nonReCourseList.get(j));
+//							messageList.add(
+//									nonReCourseList.get(j) + " " + CourseRtnCode.SAME_COURSE_SELECTED.getMessage());
+//						}
+//
+//						if (courseA.getDay() == courseB.getDay()) {
+//							if (courseA.getStart() <= courseB.getStart() && courseA.getEnd() >= courseB.getStart()) {
+//								courseSet.remove(nonReCourseList.get(j));
+//								messageList.add(
+//										nonReCourseList.get(j) + " " + CourseRtnCode.CLASS_TIME_CONFLICT.getMessage());
+//							} else if (courseA.getStart() <= courseB.getEnd() && courseA.getEnd() >= courseB.getEnd()) {
+//								courseSet.remove(nonReCourseList.get(j));
+//								messageList.add(
+//										nonReCourseList.get(j) + " " + CourseRtnCode.CLASS_TIME_CONFLICT.getMessage());
+//							}
+//						}
+//					}
+//				}
+//			} else {
+//				courseSet.remove(nonReCourseList.get(i));
+//				messageList.add(nonReCourseList.get(i) + " " + CourseRtnCode.COURSE_NOT_EXIST.getMessage());
+//			}
+//		}
 		if (messageList.isEmpty()) {
 			messageList = null;
 		}
