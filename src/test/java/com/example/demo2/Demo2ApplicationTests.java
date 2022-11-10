@@ -35,13 +35,22 @@ class Demo2ApplicationTests {
 	void contextLoads() {
 	}
 
+	@BeforeAll
+	public void setup() {
+		this.mockMvc = MockMvcBuilders.webAppContextSetup(this.wac).build();
+	}
+	
 	@Test
-	public void courseControllerTest() throws Exception {
+	public void courseCreateControllerTest() throws Exception {
 		
 		//set request_body
 		Map<String, Object> map = new LinkedHashMap<>();
-		map.put("student_id", "003");
-		map.put("student_name", "Joe");
+		map.put("id", "A99");
+		map.put("name", "test");
+		map.put("day", 6);
+		map.put("start", 10);
+		map.put("end", 11);
+		map.put("credit", 2);
 				
 		//map to string
 		ObjectMapper objectMapper = new ObjectMapper();
@@ -49,7 +58,7 @@ class Demo2ApplicationTests {
 		
 		HttpHeaders headers = new HttpHeaders();
 		headers.setContentType(MediaType.APPLICATION_JSON);
-		ResultActions result = mockMvc.perform(MockMvcRequestBuilders.post("/api/create_student").contentType(CONTENT_TYPE).
+		ResultActions result = mockMvc.perform(MockMvcRequestBuilders.post("/api/create_course").contentType(CONTENT_TYPE).
 //				headers(headers).
 				content(mapString));
 				
@@ -65,8 +74,38 @@ class Demo2ApplicationTests {
 		System.out.println(rtnMessage);
 	}
 	
-	@BeforeAll
-	public void setup() {
-		this.mockMvc = MockMvcBuilders.webAppContextSetup(this.wac).build();
+	@Test
+	public void courseAlterControllerTest() throws Exception {
+		
+		//set request_body
+		Map<String, Object> map = new LinkedHashMap<>();
+		map.put("id", "A99");
+		map.put("name", "test1");
+		map.put("day", 5);
+		map.put("start", 9);
+		map.put("end", 10);
+		map.put("credit", 1);
+				
+		//map to string
+		ObjectMapper objectMapper = new ObjectMapper();
+		String mapString = objectMapper.writeValueAsString(map);
+		
+		HttpHeaders headers = new HttpHeaders();
+		headers.setContentType(MediaType.APPLICATION_JSON);
+		ResultActions result = mockMvc.perform(MockMvcRequestBuilders.post("/api/alter_course").contentType(CONTENT_TYPE).
+//				headers(headers).
+				content(mapString));
+				
+		//get response && to string
+		String resultStr = result.andReturn().getResponse().getContentAsString();
+				
+		//response string to Json(map)
+		JacksonJsonParser jsonParser = new JacksonJsonParser();
+		Map<String, Object> resData = jsonParser.parseMap(resultStr);
+		
+		//trans type
+		String rtnMessage = (String) resData.get("message");
+		System.out.println(rtnMessage);
 	}
+	
 }

@@ -1,7 +1,7 @@
 package com.example.demo2.service.impl;
 
+import java.time.temporal.ValueRange;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
@@ -134,104 +134,34 @@ public class CourseServiceImpl implements CourseService {
 		}
 		Student student = studentOp.get();
 		String courseIdStr = student.getCourseId();
-		String[] courseIdArray = null;
 		Set<String> courseSet = new HashSet<>();
-		for (String strr : courseSelList) {
-			courseSet.add(strr);
-		}
 
-		if (StringUtils.hasText(courseIdStr)) {
-			courseIdArray = courseIdStr.split(",");
-			for (String origCourse : courseIdArray) {
-				courseSet.add(origCourse.trim());
-			}
-		}
-		List<String> nonReCourseList = new ArrayList<>(courseSet);
-		List<Course> allCourseList = new ArrayList<>();
-		for(String str:nonReCourseList) {
-			Optional<Course> courseOp = courseDao.findById(str);
-			if(courseOp.isPresent()) {
-				allCourseList.add(courseOp.get());
-			}
-			else {
-				courseSet.remove(str);
-				messageList.add(str + " " + CourseRtnCode.COURSE_NOT_EXIST.getMessage());
-			}
-		}
-		
-		for(int i = 0;i<allCourseList.size();i++) {
-			Course courseA = allCourseList.get(i);
-			for(int j=i+1;j<allCourseList.size();j++) {
-				Course courseB = allCourseList.get(j);
-				if (courseA.getName().equalsIgnoreCase(courseB.getName())) {
-					courseSet.remove(nonReCourseList.get(j));
-					messageList.add(
-							nonReCourseList.get(j) + " " + CourseRtnCode.SAME_COURSE_SELECTED.getMessage());
-				}
-				
-				if (courseA.getDay() == courseB.getDay()) {
-					if (courseA.getStart() <= courseB.getStart() && courseA.getEnd() >= courseB.getStart()) {
-						courseSet.remove(nonReCourseList.get(j));
-						messageList.add(
-								nonReCourseList.get(j) + " " + CourseRtnCode.CLASS_TIME_CONFLICT.getMessage());
-					} else if (courseA.getStart() <= courseB.getEnd() && courseA.getEnd() >= courseB.getEnd()) {
-						courseSet.remove(nonReCourseList.get(j));
-						messageList.add(
-								nonReCourseList.get(j) + " " + CourseRtnCode.CLASS_TIME_CONFLICT.getMessage());
-					}
-				}
-			}
-		}
-		
-//		for (int i = 0; i < nonReCourseList.size(); i++) {
-//			if (courseDao.findById(nonReCourseList.get(i)).isPresent()) {
-//				Course courseA = courseDao.findById(nonReCourseList.get(i)).get();
-//				for (int j = i + 1; j < nonReCourseList.size(); j++) {
-//					if (courseDao.findById(nonReCourseList.get(j)).isPresent()) {
-//						Course courseB = courseDao.findById(nonReCourseList.get(j)).get();
-//						if (courseA.getName().equalsIgnoreCase(courseB.getName())) {
-//							courseSet.remove(nonReCourseList.get(j));
-//							messageList.add(
-//									nonReCourseList.get(j) + " " + CourseRtnCode.SAME_COURSE_SELECTED.getMessage());
-//						}
-//
-//						if (courseA.getDay() == courseB.getDay()) {
-//							if (courseA.getStart() <= courseB.getStart() && courseA.getEnd() >= courseB.getStart()) {
-//								courseSet.remove(nonReCourseList.get(j));
-//								messageList.add(
-//										nonReCourseList.get(j) + " " + CourseRtnCode.CLASS_TIME_CONFLICT.getMessage());
-//							} else if (courseA.getStart() <= courseB.getEnd() && courseA.getEnd() >= courseB.getEnd()) {
-//								courseSet.remove(nonReCourseList.get(j));
-//								messageList.add(
-//										nonReCourseList.get(j) + " " + CourseRtnCode.CLASS_TIME_CONFLICT.getMessage());
-//							}
-//						}
-//					}
-//				}
-//			} else {
-//				courseSet.remove(nonReCourseList.get(i));
-//				messageList.add(nonReCourseList.get(i) + " " + CourseRtnCode.COURSE_NOT_EXIST.getMessage());
-//			}
-//		}
-		if (messageList.isEmpty()) {
-			messageList = null;
-		}
-		res.setMessageList(messageList);
+		courseSelectIdCheck(courseSelList, messageList, courseSet, courseIdStr);
+		courseTimeAndNameCheck(messageList, courseSet, courseIdStr);
+
 		if (courseSet.isEmpty()) {
+			res.setStudentId(student.getId());
+			res.setStudentName(student.getName());
+			res.setMessageList(messageList);
 			res.setMessage(CourseRtnCode.NO_COURSE_SELECTED.getMessage());
 			return res;
 		}
-		List<Course> allStudentCourse = new ArrayList<>();
-		for (String str : courseSet) {
-			Course course = courseDao.findById(str).get();
-			allStudentCourse.add(course);
+
+		List<Course> allStudentCourse = courseDao.findAllById(courseSet);
+		for (Course course : allStudentCourse) {
 			totalCredit += course.getCredit();
 		}
 		if (totalCredit > 10) {
 			res.setMessage(CourseRtnCode.CREDIT_TOTAL_OVER.getMessage());
 			return res;
 		}
-		res.setMessage(CourseRtnCode.SUCCESS.getMessage());
+		if (messageList.isEmpty()) {
+			res.setMessage(CourseRtnCode.SUCCESS.getMessage());
+			messageList = null;
+		} else {
+			res.setMessage(CourseRtnCode.WARNING.getMessage());
+		}
+		res.setMessageList(messageList);
 		student.setCourseId(courseSet.toString().substring(1, courseSet.toString().length() - 1));
 		studentDao.save(student);
 		res.setCourseList(allStudentCourse);
@@ -240,6 +170,72 @@ public class CourseServiceImpl implements CourseService {
 		res.setStudentId(student.getId());
 		res.setTotlaCredit(totalCredit);
 		return res;
+	}
+
+	private void courseSelectIdCheck(List<String> courseSelList, List<String> messageList, Set<String> courseSet,
+			String courseIdStr) {
+		List<Course> allCourse = courseDao.findAllByIdIn(courseSelList);
+		for (Course course : allCourse) {
+			if (courseSelList.contains(course.getId())) {
+				courseSelList.remove(course.getId());
+				courseSet.add(course.getId());
+			}
+		}
+		if (!courseSelList.isEmpty()) {
+			messageList.add(courseSelList.toString().substring(1, courseSelList.toString().length() - 1) + " "
+					+ CourseRtnCode.COURSE_NOT_EXIST.getMessage());
+		}
+		String[] courseIdArray = null;
+		if (StringUtils.hasText(courseIdStr)) {
+			for (String str : courseSet) {
+				if (courseIdStr.contains(str.trim())) {
+					messageList.add(str.trim() + " " + CourseRtnCode.SAME_ID_COURSE_SELECTED.getMessage());
+				}
+			}
+			courseIdArray = courseIdStr.split(",");
+			for (String origCourse : courseIdArray) {
+				courseSet.add(origCourse.trim());
+			}
+		} else {
+			courseIdStr = "";
+		}
+	}
+
+	private void courseTimeAndNameCheck(List<String> messageList, Set<String> courseSet, String courseIdStr) {
+		List<String> CourseSetToList = new ArrayList<>(courseSet);
+		List<Course> myAllCourseList = courseDao.findAllById(CourseSetToList);
+		for (int i = 0; i < myAllCourseList.size() - 1; i++) {
+			Course courseA = myAllCourseList.get(i);
+			for (int j = i + 1; j < myAllCourseList.size(); j++) {
+				Course courseB = myAllCourseList.get(j);
+				if (courseA.getName().equalsIgnoreCase(courseB.getName())) {
+					messageList.add(courseContainCheck(courseA, courseB, courseSet, courseIdStr)
+							+ CourseRtnCode.SAME_NAME_COURSE_SELECTED.getMessage());
+				}
+				if (courseA.getDay() == courseB.getDay()) {
+					if (!(courseA.getStart() >= courseB.getEnd() || courseA.getEnd() <= courseB.getStart())) {
+						messageList.add(courseContainCheck(courseA, courseB, courseSet, courseIdStr)
+								+ CourseRtnCode.CLASS_TIME_CONFLICT.getMessage());
+					}
+				}
+			}
+		}
+	}
+
+	private String courseContainCheck(Course courseA, Course courseB, Set<String> courseSet, String courseIdStr) {
+		String failList;
+		if (courseIdStr.contains(courseA.getId())) {
+			courseSet.remove(courseB.getId());
+			failList = courseB.getId() + " ";
+		} else if (!courseIdStr.contains(courseA.getId()) && !courseIdStr.contains(courseB.getId())) {
+			courseSet.remove(courseA.getId());
+			courseSet.remove(courseB.getId());
+			failList = courseA.getId() + " " + courseB.getId() + " ";
+		} else {
+			courseSet.remove(courseA.getId());
+			failList = courseA.getId() + " ";
+		}
+		return failList;
 	}
 
 	@Override
@@ -252,7 +248,7 @@ public class CourseServiceImpl implements CourseService {
 		}
 		Student student = studentOp.get();
 		String courseIdStr = student.getCourseId();
-		if (courseIdStr == null) {
+		if (courseIdStr.isEmpty()) {
 			res.setMessage(CourseRtnCode.NO_COURSE_SELECTED.getMessage());
 			return res;
 		}
@@ -261,6 +257,37 @@ public class CourseServiceImpl implements CourseService {
 		for (String item : courseIdArray) {
 			courseList.add(item.trim());
 		}
+		deleteStudentCourse(courseList, courseDelList);
+
+		List<Course> studentCourseList = courseDao.findAllById(courseList);
+
+		List<String> messageList = new ArrayList<>();
+		student.setCourseId(courseList.toString().substring(1, courseList.toString().length() - 1));
+		studentDao.save(student);
+		if (studentCourseList.isEmpty()) {
+			studentCourseList = null;
+		}
+
+		if (!courseDelList.isEmpty()) {
+			messageList.add(courseDelList.toString().substring(1, courseDelList.toString().length() - 1) + " "
+					+ CourseRtnCode.STUDENT_DONT_HAVE_THIS_COURSE.getMessage());
+		}
+
+		if (messageList.isEmpty()) {
+			res.setMessage(CourseRtnCode.SUCCESS.getMessage());
+			messageList = null;
+		} else {
+			res.setMessage(CourseRtnCode.WARNING.getMessage());
+		}
+
+		res.setMessageList(messageList);
+		res.setCourseList(studentCourseList);
+		res.setCourseId(student.getCourseId());
+		res.setStudentName(student.getName());
+		return res;
+	}
+
+	private void deleteStudentCourse(List<String> courseList, List<String> courseDelList) {
 		List<String> courseListForEach = new ArrayList<>(courseList);
 		List<String> courseDelListForEach = new ArrayList<>(courseDelList);
 		for (String str1 : courseListForEach) {
@@ -271,29 +298,6 @@ public class CourseServiceImpl implements CourseService {
 				}
 			}
 		}
-		List<Course> studentCourseList = new ArrayList<>();
-		for (String item : courseList) {
-			studentCourseList.add(courseDao.findById(item).get());
-		}
-		List<String> messageList = new ArrayList<>();
-		if (!courseDelList.isEmpty()) {
-			messageList.add(courseDelList.toString().substring(1, courseDelList.toString().length() - 1) + " " + CourseRtnCode.ID_NOT_EXIST.getMessage());
-		}	
-			student.setCourseId(courseList.toString().substring(1, courseList.toString().length() - 1));
-		
-		studentDao.save(student);
-		res.setMessage(CourseRtnCode.SUCCESS.getMessage());
-		if (messageList.isEmpty()) {
-			messageList = null;
-		}
-		if(studentCourseList.isEmpty()) {
-			studentCourseList = null;
-		}
-		res.setMessageList(messageList);
-		res.setCourseList(studentCourseList);
-		res.setCourseId(student.getCourseId());
-		res.setStudentName(student.getName());
-		return res;
 	}
 
 	@Override
@@ -307,18 +311,21 @@ public class CourseServiceImpl implements CourseService {
 		}
 		Student student = studentOp.get();
 		String courseIdStr = student.getCourseId();
-		if (courseIdStr == null) {
+		if (courseIdStr.isEmpty()) {
 			res.setStudentId(student.getId());
 			res.setStudentName(student.getName());
 			res.setMessage(CourseRtnCode.NO_COURSE_SELECTED.getMessage());
 			return res;
 		}
 		String[] courseIdArray = courseIdStr.split(",");
-		// List<String> courseList = new ArrayList<>();
-		List<Course> stuCourseList = new ArrayList<>();
+		List<String> courseList = new ArrayList<>();
+
 		for (String str : courseIdArray) {
-			stuCourseList.add(courseDao.findById(str.trim()).get());
-			studentCredit += courseDao.findById(str.trim()).get().getCredit();
+			courseList.add(str.trim());
+		}
+		List<Course> stuCourseList = courseDao.findAllById(courseList);
+		for (Course course : stuCourseList) {
+			studentCredit += course.getCredit();
 		}
 		res.setMessage(CourseRtnCode.SUCCESS.getMessage());
 		res.setStudentId(student.getId());
