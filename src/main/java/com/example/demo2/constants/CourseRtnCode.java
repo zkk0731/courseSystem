@@ -21,10 +21,13 @@ public enum CourseRtnCode {
 	CLASS_TIME_CONFLICT("403","Course time conflict"),
 	CREDIT_TOTAL_OVER("403","Total credit is more than 10"),
 	COURSE_NOT_EXIST("400","Select course not exist"),
-	NO_COURSE_SELECTED("400","No course is selected"),
+	NO_COURSE_SELECTED("400","Student don't have any course"),
 	SAME_NAME_COURSE_SELECTED("403","Same name course is selected"),
 	SAME_ID_COURSE_SELECTED("403","Same id course is selected"),
 	STUDENT_DONT_HAVE_THIS_COURSE("403","Student not have this courses"),
+	ID_OR_NAME_REQUIRED("400","Id or name required"),
+	COURSE_LIST_REQUIRED("400","Courses required"),
+	NO_RESULT("403","No result"),
 	WARNING("403","Warning");
 	
 	

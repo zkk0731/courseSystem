@@ -3,7 +3,6 @@ package com.example.demo2.vo;
 import java.util.List;
 
 import com.example.demo2.entity.Course;
-import com.example.demo2.entity.Student;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 

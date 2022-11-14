@@ -14,9 +14,7 @@ public interface CourseService {
 	
 	public CourseRes deleteCourse(String id);
 	
-	public CourseRes findCourseById(String id);
-	
-	public CourseRes findCourseByName(String name);
+	public CourseRes findCourseByIdOrName(List<String> ids,List<String> names);
 	
 	public Student createStudent(String id,String name);
 	

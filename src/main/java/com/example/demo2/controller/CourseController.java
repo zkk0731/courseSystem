@@ -19,6 +19,7 @@ public class CourseController {
 	@Autowired
 	private CourseService courseService;
 
+	//確認是否輸入該輸入的值
 	private CourseRes courseParamCheck(CourseReq req) {
 		CourseRes res = new CourseRes();
 		if (!StringUtils.hasText(req.getId())) {
@@ -62,6 +63,7 @@ public class CourseController {
 		return null;
 	}
 
+	//確認是否輸入該輸入的值
 	private CourseRes studentParamCheck(CourseReq req) {
 		if (!StringUtils.hasText(req.getStudentId())) {
 			CourseRes res = new CourseRes();
@@ -124,24 +126,14 @@ public class CourseController {
 		return courseService.deleteCourse(req.getId());
 	}
 
-	@PostMapping(value = "/api/find_course_by_id")
-	public CourseRes findCourseById(@RequestBody CourseReq req) {
+	@PostMapping(value = "/api/find_course_by_id_or_name")
+	public CourseRes findCourseByIdOrName(@RequestBody CourseReq req) {
 		CourseRes res = new CourseRes();
-		if (!StringUtils.hasText(req.getId())) {
-			res.setMessage(CourseRtnCode.ID_REQUIRED.getMessage());
+		if (req.getIds() == null && req.getNames() == null) {
+			res.setMessage(CourseRtnCode.ID_OR_NAME_REQUIRED.getMessage());
 			return res;
 		}
-		return courseService.findCourseById(req.getId());
-	}
-
-	@PostMapping(value = "/api/find_course_by_name")
-	public CourseRes findCourseByName(@RequestBody CourseReq req) {
-		CourseRes res = new CourseRes();
-		if (!StringUtils.hasText(req.getName())) {
-			res.setMessage(CourseRtnCode.NAME_REQUIRED.getMessage());
-			return res;
-		}
-		return courseService.findCourseByName(req.getName());
+		return courseService.findCourseByIdOrName(req.getIds(), req.getNames());
 	}
 
 	@PostMapping(value = "/api/create_student")
@@ -170,7 +162,7 @@ public class CourseController {
 		CourseRes res = new CourseRes();
 		Student student = courseService.alterStudent(req.getStudentId(), req.getStudentName());
 		if (student == null) {
-			res.setMessage(CourseRtnCode.ID_NOT_EXIST.getMessage());
+			res.setMessage(CourseRtnCode.STUDENT_ID_NOT_EXIST.getMessage());
 			return res;
 		}
 		res = new CourseRes(student.getId(), student.getName());
@@ -196,7 +188,7 @@ public class CourseController {
 			return res;
 		}
 		if (req.getCourseList() == null) {
-			res.setMessage(CourseRtnCode.NO_COURSE_SELECTED.getMessage());
+			res.setMessage(CourseRtnCode.COURSE_LIST_REQUIRED.getMessage());
 			return res;
 		}
 		return courseService.courseSelection(req.getStudentId(), req.getCourseList());
@@ -210,7 +202,7 @@ public class CourseController {
 			return res;
 		}
 		if (req.getCourseList() == null) {
-			res.setMessage(CourseRtnCode.NO_COURSE_SELECTED.getMessage());
+			res.setMessage(CourseRtnCode.COURSE_LIST_REQUIRED.getMessage());
 			return res;
 		}
 		return courseService.courseCancel(req.getStudentId(), req.getCourseList());

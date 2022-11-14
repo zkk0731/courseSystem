@@ -26,6 +26,11 @@ public class CourseReq {
 	@JsonProperty("course_list")
 	private List<String> courseList;
 
+	private List<String> ids;
+	
+	private List<String> names;
+	
+	
 	public CourseReq() {
 		
 	}
@@ -37,6 +42,26 @@ public class CourseReq {
 	public String getId() {
 		return id;
 	}
+
+	public List<String> getIds() {
+		return ids;
+	}
+
+
+	public void setIds(List<String> ids) {
+		this.ids = ids;
+	}
+
+
+	public List<String> getNames() {
+		return names;
+	}
+
+
+	public void setNames(List<String> names) {
+		this.names = names;
+	}
+
 
 	public List<String> getCourseList() {
 		return courseList;

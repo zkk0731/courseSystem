@@ -11,6 +11,7 @@ import com.example.demo2.entity.Course;
 public interface CourseDao extends JpaRepository<Course, String>{
 
 	public List<Course>findByName(String name);
-	
+	public List<Course>findByNameIn(List<String> names);
+	public List<Course>findByIdInOrNameIn(List<String>id,List<String>name);
 	public List<Course>findAllByIdIn(List<String> ids);
 }
