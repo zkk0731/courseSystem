@@ -10,35 +10,33 @@ public class CourseReq {
 	private String studentName;
 	@JsonProperty("student_id")
 	private String studentId;
-	
+
 	private String id;
-	
+
 	private String name;
-	
+
 	private Integer day;
-	
+
 	private Integer start;
-	
+
 	private Integer end;
-	
+
 	private Integer credit;
-	
+
 	@JsonProperty("course_list")
 	private List<String> courseList;
 
 	private List<String> ids;
-	
+
 	private List<String> names;
-	
-	
+
 	public CourseReq() {
-		
+
 	}
 //	public CourseReq(String id,String name,int day,int start,int end,int credit) {
 //		this.id = id;
 //	}
 
-	
 	public String getId() {
 		return id;
 	}
@@ -47,51 +45,41 @@ public class CourseReq {
 		return ids;
 	}
 
-
 	public void setIds(List<String> ids) {
 		this.ids = ids;
 	}
-
 
 	public List<String> getNames() {
 		return names;
 	}
 
-
 	public void setNames(List<String> names) {
 		this.names = names;
 	}
-
 
 	public List<String> getCourseList() {
 		return courseList;
 	}
 
-
 	public void setCourseList(List<String> courseList) {
 		this.courseList = courseList;
 	}
-
 
 	public String getStudentName() {
 		return studentName;
 	}
 
-
 	public void setStudentName(String studentName) {
 		this.studentName = studentName;
 	}
-
 
 	public String getStudentId() {
 		return studentId;
 	}
 
-
 	public void setStudentId(String studentId) {
 		this.studentId = studentId;
 	}
-
 
 	public void setId(String id) {
 		this.id = id;
@@ -136,10 +124,5 @@ public class CourseReq {
 	public void setCredit(Integer credit) {
 		this.credit = credit;
 	}
-	
-	
-	
-	
-	
-	
+
 }

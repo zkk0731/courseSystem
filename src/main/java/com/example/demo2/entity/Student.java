@@ -16,35 +16,38 @@ public class Student {
 	private String name;
 	@Column(name = "courseid")
 	private String courseId;
-	
+
 	public String getId() {
 		return id;
 	}
+
 	public Student() {
-		
+
 	}
-	public Student(String id,String name) {
+
+	public Student(String id, String name) {
 		this.name = name;
 		this.id = id;
 	}
-	
+
 	public void setId(String id) {
 		this.id = id;
 	}
+
 	public String getName() {
 		return name;
 	}
+
 	public void setName(String name) {
 		this.name = name;
 	}
+
 	public String getCourseId() {
 		return courseId;
 	}
+
 	public void setCourseId(String courseId) {
 		this.courseId = courseId;
 	}
-	
-	
-	
-	
+
 }
