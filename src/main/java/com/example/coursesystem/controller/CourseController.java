@@ -104,8 +104,8 @@ public class CourseController {
 		return res;
 	}
 
-	@PostMapping(value = "/api/alter_course")
-	public CourseRes alterCourse(@RequestBody CourseReq req) {
+	@PostMapping(value = "/api/update_course")
+	public CourseRes updateCourse(@RequestBody CourseReq req) {
 		//確認輸入該輸入的值是否合規定
 		CourseRes check = courseParamCheck(req);
 		if (check != null) {
@@ -113,7 +113,7 @@ public class CourseController {
 		}
 
 		CourseRes res = new CourseRes();
-		Course course = courseService.alterCourse(req.getId(), req.getName(), req.getDay(), req.getStart(),
+		Course course = courseService.updateCourse(req.getId(), req.getName(), req.getDay(), req.getStart(),
 				req.getEnd(), req.getCredit());
 		//上面方法若ID不存在會回傳null
 		if (course == null) {
@@ -169,15 +169,15 @@ public class CourseController {
 		return res;
 	}
 
-	@PostMapping(value = "/api/alter_student")
-	public CourseRes alterStudent(@RequestBody CourseReq req) {
+	@PostMapping(value = "/api/update_student")
+	public CourseRes updateStudent(@RequestBody CourseReq req) {
 		//確認輸入該輸入的值是否合規定
 		CourseRes check = studentParamCheck(req);
 		if (check != null) {
 			return check;
 		}
 		CourseRes res = new CourseRes();
-		Student student = courseService.alterStudent(req.getStudentId(), req.getStudentName());
+		Student student = courseService.updateStudent(req.getStudentId(), req.getStudentName());
 		if (student == null) {
 			res.setMessage(CourseRtnCode.STUDENT_ID_NOT_EXIST.getMessage());
 			return res;

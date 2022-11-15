@@ -11,7 +11,7 @@ public interface CourseService {
 	//新增課程
 	public Course createCourse(String id,String name,int day,int start,int end,int credit);
 	//修改課程
-	public Course alterCourse(String id,String name,int day,int start,int end,int credit);
+	public Course updateCourse(String id,String name,int day,int start,int end,int credit);
 	//刪除課程
 	public CourseRes deleteCourse(String id);
 	//藉由ID或名稱搜尋課程
@@ -19,7 +19,7 @@ public interface CourseService {
 	//新增學生
 	public Student createStudent(String id,String name);
 	//修改學生
-	public Student alterStudent(String id,String name);
+	public Student updateStudent(String id,String name);
 	//刪除學生
 	public CourseRes deleteStudent(String id);
 	//選課

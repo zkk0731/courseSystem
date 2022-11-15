@@ -41,7 +41,7 @@ public class CourseServiceImpl implements CourseService {
 
 	// 修改課程資料
 	@Override
-	public Course alterCourse(String id, String name, int day, int start, int end, int credit) {
+	public Course updateCourse(String id, String name, int day, int start, int end, int credit) {
 		// 判斷ID是否存在
 		Optional<Course> courseOp = courseDao.findById(id);
 		
@@ -101,7 +101,7 @@ public class CourseServiceImpl implements CourseService {
 
 	// 修改學生名子
 	@Override
-	public Student alterStudent(String id, String name) {
+	public Student updateStudent(String id, String name) {
 		// 判斷ID是否存在
 		Optional<Student> studentOp = studentDao.findById(id);
 		if (!studentOp.isPresent()) {
@@ -194,9 +194,9 @@ public class CourseServiceImpl implements CourseService {
 	// 選課ID檢查,並將符合資格的課程ID都放進Set
 	private void courseSelectIdCheck(List<String> courseSelList, List<String> messageList, Set<String> courseSet,
 			String courseIdStr) {
-		List<Course> allCourse = courseDao.findAllById(courseSelList);
+		List<Course> SelCourseInfo = courseDao.findAllById(courseSelList);
 		// 找出不在DB的課程,將有存在的課程加進Set裡,並remove courseSelList裡有存在DB的課程
-		for (Course course : allCourse) {
+		for (Course course : SelCourseInfo) {
 			if (courseSelList.contains(course.getId())) {
 				courseSelList.remove(course.getId());
 				courseSet.add(course.getId());
@@ -233,9 +233,11 @@ public class CourseServiceImpl implements CourseService {
 		List<Course> myAllCourseList = courseDao.findAllById(CourseSetToList);
 		//對同一List的資料互相比較
 		for (int i = 0; i < myAllCourseList.size() - 1; i++) {
+			
 			Course courseA = myAllCourseList.get(i);
 			for (int j = i + 1; j < myAllCourseList.size(); j++) {
 				Course courseB = myAllCourseList.get(j);
+				
 				// 課程名稱重複排除
 				if (courseA.getName().equalsIgnoreCase(courseB.getName())) {
 					//排除掉新增的重複名稱課程
@@ -256,26 +258,26 @@ public class CourseServiceImpl implements CourseService {
 
 	// 判斷兩課程為原有的或新選的,只有在課程名稱重複或衝堂時才會呼叫此方法
 	private String courseContainCheck(Course courseA, Course courseB, Set<String> courseSet, String courseIdStr) {
-		String failList;
+		String failMsg;
 		// 只排除新選的
 		// 若課程A和B衝堂,如果A是原有的的那B就是新選的,所以在Set中移除掉B
 		if (courseIdStr.contains(courseA.getId())) {
 			courseSet.remove(courseB.getId());
-			failList = courseB.getId() + " ";
+			failMsg = courseB.getId() + " ";
 		}
 		// 若A跟B都不是原有的,則都是新選的,因此皆排除
 		else if (!courseIdStr.contains(courseA.getId()) && !courseIdStr.contains(courseB.getId())) {
 			courseSet.remove(courseA.getId());
 			courseSet.remove(courseB.getId());
-			failList = courseA.getId() + " " + courseB.getId() + " ";
+			failMsg = courseA.getId() + " " + courseB.getId() + " ";
 
 		}
 		// 若不是以上條件,則A是新選的,將他排除
 		else {
 			courseSet.remove(courseA.getId());
-			failList = courseA.getId() + " ";
+			failMsg = courseA.getId() + " ";
 		}
-		return failList;
+		return failMsg;
 	}
 
 	@Override

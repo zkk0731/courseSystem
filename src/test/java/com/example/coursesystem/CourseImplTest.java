@@ -39,7 +39,7 @@ public class CourseImplTest {
 	
 	@Test
 	public void alterCourseTest() {
-		Course courseTest =  coursevice.alterCourse("A99", "test", 2, 10, 11, 2);
+		Course courseTest =  coursevice.updateCourse("A99", "test", 2, 10, 11, 2);
 		Assert.isTrue(courseTest.getId() == null, "id error");
 		Assert.isTrue(courseTest.getName() == null, "id error");
 		Assert.isTrue(courseTest.getDay() == 0, "id error");
@@ -65,7 +65,7 @@ public class CourseImplTest {
 	
 	@Test
 	public void alterStudentTest() {
-		Student student = coursevice.alterStudent("998", "test2");
+		Student student = coursevice.updateStudent("998", "test2");
 		Assert.isTrue(student.getId().equals("998"),"id fail");
 		Assert.isTrue(student.getName().equals("test2"),"name fail");		
 	}
