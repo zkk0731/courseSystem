@@ -1,4 +1,4 @@
-package com.example.demo2;
+package com.example.coursesystem;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -24,7 +24,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 @WebAppConfiguration
 @SpringBootTest
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-class Demo2ApplicationTests {
+class coursesystemApplicationTests {
 
 	private static final String CONTENT_TYPE = "application/json;charset=UTF-8";
 	//mockMvc 是基於 WebApplicationContext 所建立的物件，可用來編寫web應用的整合測試
