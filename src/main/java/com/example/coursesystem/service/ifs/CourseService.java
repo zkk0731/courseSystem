@@ -1,10 +1,10 @@
-package com.example.demo2.service.ifs;
+package com.example.coursesystem.service.ifs;
 
 import java.util.List;
 
-import com.example.demo2.entity.Course;
-import com.example.demo2.entity.Student;
-import com.example.demo2.vo.CourseRes;
+import com.example.coursesystem.entity.Course;
+import com.example.coursesystem.entity.Student;
+import com.example.coursesystem.vo.CourseRes;
 
 public interface CourseService {
 	

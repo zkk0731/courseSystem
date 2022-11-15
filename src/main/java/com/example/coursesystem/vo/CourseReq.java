@@ -1,4 +1,4 @@
-package com.example.demo2.vo;
+package com.example.coursesystem.vo;
 
 import java.util.List;
 

@@ -8,13 +8,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.util.Assert;
 
-import com.example.demo2.constants.CourseRtnCode;
-import com.example.demo2.entity.Course;
-import com.example.demo2.entity.Student;
-import com.example.demo2.repository.CourseDao;
-import com.example.demo2.repository.StudentDao;
-import com.example.demo2.service.ifs.CourseService;
-import com.example.demo2.vo.CourseRes;
+import com.example.coursesystem.constants.CourseRtnCode;
+import com.example.coursesystem.entity.Course;
+import com.example.coursesystem.entity.Student;
+import com.example.coursesystem.repository.CourseDao;
+import com.example.coursesystem.repository.StudentDao;
+import com.example.coursesystem.service.ifs.CourseService;
+import com.example.coursesystem.vo.CourseRes;
 
 @SpringBootTest
 public class CourseImplTest {

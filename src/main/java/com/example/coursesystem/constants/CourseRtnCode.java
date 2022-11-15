@@ -1,4 +1,4 @@
-package com.example.demo2.constants;
+package com.example.coursesystem.constants;
 
 public enum CourseRtnCode {
 

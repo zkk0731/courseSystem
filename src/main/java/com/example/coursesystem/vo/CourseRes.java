@@ -1,8 +1,8 @@
-package com.example.demo2.vo;
+package com.example.coursesystem.vo;
 
 import java.util.List;
 
-import com.example.demo2.entity.Course;
+import com.example.coursesystem.entity.Course;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
