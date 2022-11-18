@@ -28,6 +28,8 @@ public enum CourseRtnCode {
 	ID_OR_NAME_REQUIRED("400","Id or name required"),
 	COURSE_LIST_REQUIRED("400","Courses required"),
 	NO_RESULT("403","No result"),
+	NEED_CANCEL_ALL_COURSE("403","Student must cancel all course"),
+	COURSE_CANNOT_BE_SELECTED_MORE_THAN_5("403","Course can't be selected by more than 5 students"),
 	WARNING("403","Warning");
 	
 	

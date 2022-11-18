@@ -83,7 +83,7 @@ public class CourseController {
 	}
 
 	@PostMapping(value = "/api/create_course")
-	public CourseRes addCourse(@RequestBody CourseReq req) {
+	public CourseRes createCourse(@RequestBody CourseReq req) {
 		//確認輸入該輸入的值是否合規定,都有則回傳null
 		CourseRes check = courseParamCheck(req);
 		if (check != null) {

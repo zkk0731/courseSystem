@@ -1,8 +1,10 @@
 package com.example.coursesystem.service.impl;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
@@ -44,7 +46,7 @@ public class CourseServiceImpl implements CourseService {
 	public Course updateCourse(String id, String name, int day, int start, int end, int credit) {
 		// 判斷ID是否存在
 		Optional<Course> courseOp = courseDao.findById(id);
-		
+
 		if (!courseOp.isPresent()) {
 			return null;
 		}
@@ -52,7 +54,7 @@ public class CourseServiceImpl implements CourseService {
 		Course course = courseOp.get();
 		course = new Course(id, name, day, start, end, credit);
 		return courseDao.save(course);
-		
+
 	}
 
 	// 刪除課程
@@ -111,7 +113,7 @@ public class CourseServiceImpl implements CourseService {
 		// 將輸入值帶入
 		student = new Student(id, name);
 		return studentDao.save(student);
-		
+
 	}
 
 	// 刪除學生
@@ -122,11 +124,16 @@ public class CourseServiceImpl implements CourseService {
 		CourseRes res = new CourseRes();
 		if (studentOp.isPresent()) {
 			Student student = studentOp.get();
-			studentDao.delete(student);
-			res.setMessage(CourseRtnCode.SUCCESS.getMessage());
-			return res;
+			// 學生須退完課才能夠刪除
+			if (!StringUtils.hasText(student.getCourseId())) {
+				studentDao.delete(student);
+				res.setMessage(CourseRtnCode.SUCCESS.getMessage());
+				return res;
+			} else {
+				res.setMessage(CourseRtnCode.NEED_CANCEL_ALL_COURSE.getMessage());
+				return res;
+			}
 		}
-
 		res.setMessage(CourseRtnCode.ID_NOT_EXIST.getMessage());
 		return res;
 	}
@@ -147,10 +154,15 @@ public class CourseServiceImpl implements CourseService {
 		// 將學生DB裡存的課程ID以courseIdStr接收
 		String courseIdStr = student.getCourseId();
 		Set<String> courseSet = new HashSet<>();
+
 		// 選課ID檢查,並將符合資格的課程ID都放進Set
 		courseSelectIdCheck(courseSelList, messageList, courseSet, courseIdStr);
+
 		// 檢查是否相同名稱及衝堂,並移除
 		courseTimeAndNameCheck(messageList, courseSet, courseIdStr);
+
+		// 判斷選的課是否被超過五人選過了
+		courseSelectByStudentCount(courseSet, messageList, courseIdStr);
 
 		// 若courseSet為空則代表沒有選任何課程
 		if (courseSet.isEmpty()) {
@@ -182,32 +194,36 @@ public class CourseServiceImpl implements CourseService {
 		// 將List轉成字串存回DB
 		student.setCourseId(courseSet.toString().substring(1, courseSet.toString().length() - 1));
 		studentDao.save(student);
-		
+
 		res.setCourseList(allStudentCourse);
 		res.setCourseId(student.getCourseId());
 		res.setStudentName(student.getName());
 		res.setStudentId(student.getId());
 		res.setTotlaCredit(totalCredit);
+
 		return res;
 	}
 
 	// 選課ID檢查,並將符合資格的課程ID都放進Set
 	private void courseSelectIdCheck(List<String> courseSelList, List<String> messageList, Set<String> courseSet,
 			String courseIdStr) {
-		List<Course> SelCourseInfo = courseDao.findAllById(courseSelList);
+
+		List<Course> selCourseInfo = courseDao.findAllById(courseSelList);
+
 		// 找出不在DB的課程,將有存在的課程加進Set裡,並remove courseSelList裡有存在DB的課程
-		for (Course course : SelCourseInfo) {
+		for (Course course : selCourseInfo) {
 			if (courseSelList.contains(course.getId())) {
 				courseSelList.remove(course.getId());
 				courseSet.add(course.getId());
 			}
 		}
+
 		// courseSelList 會剩下不在DB裡的課程
 		if (!courseSelList.isEmpty()) {
 			messageList.add(courseSelList.toString().substring(1, courseSelList.toString().length() - 1) + " "
 					+ CourseRtnCode.COURSE_NOT_EXIST.getMessage());
 		}
-		String[] courseIdArray = null;
+		String[] courseIdArray;
 		// 找出重複ID的課程
 		if (StringUtils.hasText(courseIdStr)) {
 			for (String str : courseSet) {
@@ -229,24 +245,26 @@ public class CourseServiceImpl implements CourseService {
 	// 檢查衝堂和名稱相同的課程
 	private void courseTimeAndNameCheck(List<String> messageList, Set<String> courseSet, String courseIdStr) {
 		// Set轉成List 方便使用index位置取值
-		List<String> CourseSetToList = new ArrayList<>(courseSet);
-		List<Course> myAllCourseList = courseDao.findAllById(CourseSetToList);
-		//對同一List的資料互相比較
+		List<String> courseSetToList = new ArrayList<>(courseSet);
+		List<Course> myAllCourseList = courseDao.findAllById(courseSetToList);
+		// 對同一List的資料互相比較
 		for (int i = 0; i < myAllCourseList.size() - 1; i++) {
-			
+
 			Course courseA = myAllCourseList.get(i);
 			for (int j = i + 1; j < myAllCourseList.size(); j++) {
+
 				Course courseB = myAllCourseList.get(j);
-				
+
 				// 課程名稱重複排除
 				if (courseA.getName().equalsIgnoreCase(courseB.getName())) {
-					//排除掉新增的重複名稱課程
+					// 排除掉新增的重複名稱課程
 					messageList.add(courseContainCheck(courseA, courseB, courseSet, courseIdStr)
 							+ CourseRtnCode.SAME_NAME_COURSE_SELECTED.getMessage());
 				}
+
 				// 衝堂排除
 				if (courseA.getDay() == courseB.getDay()) {
-					//排除掉新增的衝堂課程
+					// 排除掉新增的衝堂課程
 					if (!(courseA.getStart() >= courseB.getEnd() || courseA.getEnd() <= courseB.getStart())) {
 						messageList.add(courseContainCheck(courseA, courseB, courseSet, courseIdStr)
 								+ CourseRtnCode.CLASS_TIME_CONFLICT.getMessage());
@@ -280,17 +298,64 @@ public class CourseServiceImpl implements CourseService {
 		return failMsg;
 	}
 
+	// 判斷選的課是否被超過五人選過了
+	private void courseSelectByStudentCount(Set<String> courseSet, List<String> messageList, String courseIdStr) {
+		// 找出所有學生資料
+		List<Student> studentList = studentDao.findAll();
+
+		// new一個map Key=課程ID Value=選課人數
+		Map<String, Integer> courseCountMap = new HashMap<>();
+
+		// 將所有學生選的所有課存成List
+		List<String> allStudentCourse = new ArrayList<>();
+		for (Student stu : studentList) {
+			String allStudentCourseIdStr = stu.getCourseId();
+			if (StringUtils.hasText(allStudentCourseIdStr)) {
+				allStudentCourse.addAll(courseStrToList(allStudentCourseIdStr));
+			}
+		}
+
+		// 將新選的課也放入List
+		allStudentCourse.addAll(courseSet);
+
+		// 判斷課程ID在List中有幾個=被選了幾次
+		// 超過五就擋掉此筆加選
+		for (String str : allStudentCourse) {
+			Integer selCount = courseCountMap.get(str);
+			if (selCount == null) {
+				selCount = 0;
+			}
+
+			switch (selCount) {
+			case 0:
+			case 1:
+			case 2:
+			case 3:
+			case 4:
+				courseCountMap.put(str, selCount + 1);
+				break;
+			case 5:
+				if (!courseIdStr.contains(str)) {
+					courseSet.remove(str);
+					messageList.add(str + " " + CourseRtnCode.COURSE_CANNOT_BE_SELECTED_MORE_THAN_5.getMessage());
+					break;
+				}
+			}
+		}
+
+	}
+
 	@Override
 	public CourseRes courseCancel(String studentId, List<String> courseDelList) {
 		CourseRes res = new CourseRes();
 		List<String> messageList = new ArrayList<>();
-		//判斷學生資料是否存在
+		// 判斷學生資料是否存在
 		Optional<Student> studentOp = studentDao.findById(studentId);
 		if (!studentOp.isPresent()) {
 			res.setMessage(CourseRtnCode.STUDENT_ID_NOT_EXIST.getMessage());
 			return res;
 		}
-		//學生選課ID
+		// 學生選課ID
 		Student student = studentOp.get();
 		String courseIdStr = student.getCourseId();
 		// 學生本來沒任何課,因此無法退選
@@ -306,9 +371,9 @@ public class CourseServiceImpl implements CourseService {
 				messageList.add(str + " " + CourseRtnCode.STUDENT_DONT_HAVE_THIS_COURSE.getMessage());
 			}
 		}
-		//移除courseList裡有含courseDelList的課程
+		// 移除courseList裡有含courseDelList的課程
 		courseList.removeAll(courseDelList);
-		//取得學生選課詳細課程資料
+		// 取得學生選課詳細課程資料
 		List<Course> studentCourseList = courseDao.findAllById(courseList);
 		// 將List轉成字串存回DB
 		student.setCourseId(courseList.toString().substring(1, courseList.toString().length() - 1));
@@ -317,7 +382,7 @@ public class CourseServiceImpl implements CourseService {
 		if (studentCourseList.isEmpty()) {
 			studentCourseList = null;
 		}
-		
+
 		// 若messageList為空 表示沒有任何警告資訊
 		if (messageList.isEmpty()) {
 			res.setMessage(CourseRtnCode.SUCCESS.getMessage());
@@ -336,14 +401,14 @@ public class CourseServiceImpl implements CourseService {
 	@Override
 	public CourseRes findStudentInfo(String studentId) {
 		int studentCredit = 0;
-		//判斷學生資料是否存在
+		// 判斷學生資料是否存在
 		CourseRes res = new CourseRes();
 		Optional<Student> studentOp = studentDao.findById(studentId);
 		if (!studentOp.isPresent()) {
 			res.setMessage(CourseRtnCode.ID_NOT_EXIST.getMessage());
 			return res;
 		}
-		//取出學生選課資料
+		// 取出學生選課資料
 		Student student = studentOp.get();
 		String courseIdStr = student.getCourseId();
 		// 沒選任何課 直接回傳
@@ -355,13 +420,13 @@ public class CourseServiceImpl implements CourseService {
 		}
 		// 學生課課程ID字串轉成陣列,再放入List
 		List<String> courseList = courseStrToList(courseIdStr);
-		//取得學生選課詳細課程資料
+		// 取得學生選課詳細課程資料
 		List<Course> stuCourseList = courseDao.findAllById(courseList);
-		//計算總學分
+		// 計算總學分
 		for (Course course : stuCourseList) {
 			studentCredit += course.getCredit();
 		}
-		
+
 		res.setMessage(CourseRtnCode.SUCCESS.getMessage());
 		res.setStudentId(student.getId());
 		res.setStudentName(student.getName());
@@ -372,8 +437,11 @@ public class CourseServiceImpl implements CourseService {
 
 	// 學生課課程ID字串轉成陣列,再放入List
 	private List<String> courseStrToList(String courseIdStr) {
+		// 用逗號將字串內不同課程切開裝入陣列
 		String[] courseIdArray = courseIdStr.split(",");
 		List<String> courseList = new ArrayList<>();
+
+		// 將陣列內資料存入List
 		for (String item : courseIdArray) {
 			courseList.add(item.trim());
 		}
