@@ -2,6 +2,7 @@ package com.example.coursesystem.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -13,13 +14,14 @@ import com.example.coursesystem.service.ifs.CourseService;
 import com.example.coursesystem.vo.CourseReq;
 import com.example.coursesystem.vo.CourseRes;
 
+@CrossOrigin
 @RestController
 public class CourseController {
 
 	@Autowired
 	private CourseService courseService;
 
-	// ½T»{¿é¤J¸Ó¿é¤Jªº­È¬O§_¦X³W©w
+	// ç¢ºèªè¼¸å…¥è©²è¼¸å…¥çš„å€¼æ˜¯å¦åˆè¦å®š
 	private CourseRes courseParamCheck(CourseReq req) {
 		CourseRes res = new CourseRes();
 		if (!StringUtils.hasText(req.getId())) {
@@ -42,13 +44,13 @@ public class CourseController {
 			res.setMessage(CourseRtnCode.END_REQUIRED.getMessage());
 			return res;
 		}
-		//¬P´Á¤Ñ¼Æ¶·²Å¦XÅŞ¿è
+		//æ˜ŸæœŸå¤©æ•¸é ˆç¬¦åˆé‚è¼¯
 		if (req.getDay() < 1 || req.getDay() > 7) {
 			res.setMessage(CourseRtnCode.DAY_FAIL.getMessage());
 			return res;
 		}
 
-		//­­¨î¶}©l»Pµ²§ô®É¶¡
+		//é™åˆ¶é–‹å§‹èˆ‡çµæŸæ™‚é–“
 		if (req.getStart() < 8 || req.getStart() > 16 || req.getStart() > req.getEnd() || req.getEnd() < 9
 				|| req.getEnd() > 17) {
 			res.setMessage(CourseRtnCode.TIME_PARAM_ERROR.getMessage());
@@ -58,7 +60,7 @@ public class CourseController {
 			res.setMessage(CourseRtnCode.CREDIT_REQUIRED.getMessage());
 			return res;
 		}
-		//³æ¤@½Òµ{¤£¯à¶W¹L3¾Ç¤À
+		//å–®ä¸€èª²ç¨‹ä¸èƒ½è¶…é3å­¸åˆ†
 		if (req.getCredit() < 1 || req.getCredit() > 3) {
 			res.setMessage(CourseRtnCode.CREDIT_PARAM_ERROR.getMessage());
 			return res;
@@ -66,7 +68,7 @@ public class CourseController {
 		return null;
 	}
 
-	// ½T»{¿é¤J¸Ó¿é¤Jªº­È¬O§_¦X³W©w
+	// ç¢ºèªè¼¸å…¥è©²è¼¸å…¥çš„å€¼æ˜¯å¦åˆè¦å®š
 	private CourseRes studentParamCheck(CourseReq req) {
 		
 		if (!StringUtils.hasText(req.getStudentId())) {
@@ -84,7 +86,7 @@ public class CourseController {
 
 	@PostMapping(value = "/api/create_course")
 	public CourseRes createCourse(@RequestBody CourseReq req) {
-		//½T»{¿é¤J¸Ó¿é¤Jªº­È¬O§_¦X³W©w,³£¦³«h¦^¶Çnull
+		//ç¢ºèªè¼¸å…¥è©²è¼¸å…¥çš„å€¼æ˜¯å¦åˆè¦å®š,éƒ½æœ‰å‰‡å›å‚³null
 		CourseRes check = courseParamCheck(req);
 		if (check != null) {
 			return check;
@@ -93,7 +95,7 @@ public class CourseController {
 		CourseRes res = new CourseRes();
 		Course course = courseService.createCourse(req.getId(), req.getName(), req.getDay(), req.getStart(),
 				req.getEnd(), req.getCredit());
-		//¤W­±¤èªk­YID¤£¦s¦b·|¦^¶Çnull
+		//ä¸Šé¢æ–¹æ³•è‹¥IDä¸å­˜åœ¨æœƒå›å‚³null
 		if (course == null) {
 			res.setMessage(CourseRtnCode.ID_EXIST.getMessage());
 			return res;
@@ -106,7 +108,7 @@ public class CourseController {
 
 	@PostMapping(value = "/api/update_course")
 	public CourseRes updateCourse(@RequestBody CourseReq req) {
-		//½T»{¿é¤J¸Ó¿é¤Jªº­È¬O§_¦X³W©w
+		//ç¢ºèªè¼¸å…¥è©²è¼¸å…¥çš„å€¼æ˜¯å¦åˆè¦å®š
 		CourseRes check = courseParamCheck(req);
 		if (check != null) {
 			return check;
@@ -115,7 +117,7 @@ public class CourseController {
 		CourseRes res = new CourseRes();
 		Course course = courseService.updateCourse(req.getId(), req.getName(), req.getDay(), req.getStart(),
 				req.getEnd(), req.getCredit());
-		//¤W­±¤èªk­YID¤£¦s¦b·|¦^¶Çnull
+		//ä¸Šé¢æ–¹æ³•è‹¥IDä¸å­˜åœ¨æœƒå›å‚³null
 		if (course == null) {
 			res.setMessage(CourseRtnCode.ID_NOT_EXIST.getMessage());
 			return res;
@@ -129,7 +131,7 @@ public class CourseController {
 	@PostMapping(value = "/api/delete_course")
 	public CourseRes deleteCourse(@RequestBody CourseReq req) {
 		CourseRes res = new CourseRes();
-		//¨S¿é¤J©Ò»İ­È®É,µ¹¤©Äµ¥Ü
+		//æ²’è¼¸å…¥æ‰€éœ€å€¼æ™‚,çµ¦äºˆè­¦ç¤º
 		if (!StringUtils.hasText(req.getId())) {
 			res.setMessage(CourseRtnCode.ID_REQUIRED.getMessage());
 			return res;
@@ -141,7 +143,7 @@ public class CourseController {
 	@PostMapping(value = "/api/find_course_by_id_or_name")
 	public CourseRes findCourseByIdOrName(@RequestBody CourseReq req) {
 		CourseRes res = new CourseRes();
-		//¨S¿é¤J©Ò»İ­È®É,µ¹¤©Äµ¥Ü
+		//æ²’è¼¸å…¥æ‰€éœ€å€¼æ™‚,çµ¦äºˆè­¦ç¤º
 		if (req.getIds() == null && req.getNames() == null) {
 			res.setMessage(CourseRtnCode.ID_OR_NAME_REQUIRED.getMessage());
 			return res;
@@ -152,7 +154,7 @@ public class CourseController {
 
 	@PostMapping(value = "/api/create_student")
 	public CourseRes createStudent(@RequestBody CourseReq req) {
-		//½T»{¿é¤J¸Ó¿é¤Jªº­È¬O§_¦X³W©w
+		//ç¢ºèªè¼¸å…¥è©²è¼¸å…¥çš„å€¼æ˜¯å¦åˆè¦å®š
 		CourseRes check = studentParamCheck(req);
 		if (check != null) {
 			return check;
@@ -171,7 +173,7 @@ public class CourseController {
 
 	@PostMapping(value = "/api/update_student")
 	public CourseRes updateStudent(@RequestBody CourseReq req) {
-		//½T»{¿é¤J¸Ó¿é¤Jªº­È¬O§_¦X³W©w
+		//ç¢ºèªè¼¸å…¥è©²è¼¸å…¥çš„å€¼æ˜¯å¦åˆè¦å®š
 		CourseRes check = studentParamCheck(req);
 		if (check != null) {
 			return check;
@@ -191,7 +193,7 @@ public class CourseController {
 	@PostMapping(value = "/api/delete_student")
 	public CourseRes deleteStudent(@RequestBody CourseReq req) {
 		CourseRes res = new CourseRes();
-		//¨S¿é¤J©Ò»İ­È®É,µ¹¤©Äµ¥Ü
+		//æ²’è¼¸å…¥æ‰€éœ€å€¼æ™‚,çµ¦äºˆè­¦ç¤º
 		if (!StringUtils.hasText(req.getStudentId())) {
 			res.setMessage(CourseRtnCode.STUDENT_ID_REQUIRED.getMessage());
 			return res;
@@ -203,7 +205,7 @@ public class CourseController {
 	@PostMapping(value = "/api/select_course")
 	public CourseRes selectCourse(@RequestBody CourseReq req) {
 		CourseRes res = new CourseRes();
-		//¨S¿é¤J©Ò»İ­È®É,µ¹¤©Äµ¥Ü
+		//æ²’è¼¸å…¥æ‰€éœ€å€¼æ™‚,çµ¦äºˆè­¦ç¤º
 		if (!StringUtils.hasText(req.getStudentId())) {
 			res.setMessage(CourseRtnCode.STUDENT_ID_REQUIRED.getMessage());
 			return res;
@@ -219,7 +221,7 @@ public class CourseController {
 	@PostMapping(value = "/api/cancel_course")
 	public CourseRes cancelCourse(@RequestBody CourseReq req) {
 		CourseRes res = new CourseRes();
-		//¨S¿é¤J©Ò»İ­È®É,µ¹¤©Äµ¥Ü
+		//æ²’è¼¸å…¥æ‰€éœ€å€¼æ™‚,çµ¦äºˆè­¦ç¤º
 		if (!StringUtils.hasText(req.getStudentId())) {
 			res.setMessage(CourseRtnCode.STUDENT_ID_REQUIRED.getMessage());
 			return res;
@@ -235,7 +237,7 @@ public class CourseController {
 	@PostMapping(value = "/api/find_student_info")
 	public CourseRes findStudentInfo(@RequestBody CourseReq req) {
 		CourseRes res = new CourseRes();
-		//¨S¿é¤J©Ò»İ­È®É,µ¹¤©Äµ¥Ü
+		//æ²’è¼¸å…¥æ‰€éœ€å€¼æ™‚,çµ¦äºˆè­¦ç¤º
 		if (!StringUtils.hasText(req.getStudentId())) {
 			res.setMessage(CourseRtnCode.STUDENT_ID_REQUIRED.getMessage());
 			return res;

@@ -28,43 +28,43 @@ public class CourseServiceImpl implements CourseService {
 	@Autowired
 	private StudentDao studentDao;
 
-	// ·s¼W½Òµ{¤Î¸ê®Æ
+	// æ–°å¢èª²ç¨‹åŠè³‡æ–™
 	@Override
 	public Course createCourse(String id, String name, int day, int start, int end, int credit) {
-		// §PÂ_ID¬O§_¦s¦b
+		// ï¿½Pï¿½_IDï¿½Oï¿½_ï¿½sï¿½b
 		if (courseDao.existsById(id)) {
 			return null;
 		}
-		// ±N¿é¤J­È±a¤J
+		// å°‡è¼¸å…¥å€¼å¸¶å…¥
 		Course course = new Course(id, name, day, start, end, credit);
-		// save¦^DB
+		// saveå›DB
 		return courseDao.save(course);
 	}
 
-	// ­×§ï½Òµ{¸ê®Æ
+	// ä¿®æ”¹èª²ç¨‹è³‡æ–™
 	@Override
 	public Course updateCourse(String id, String name, int day, int start, int end, int credit) {
-		// §PÂ_ID¬O§_¦s¦b
+		// åˆ¤æ–·IDæ˜¯å¦å­˜åœ¨
 		Optional<Course> courseOp = courseDao.findById(id);
 
 		if (!courseOp.isPresent()) {
 			return null;
 		}
-		// ¦s¦b´N±NDB¸Ìªº¸ê®Æget¥X¨Ó,¦A±N­×§ï­È¦s¦^
+		// å­˜åœ¨å°±å°‡DBè£¡çš„è³‡æ–™getå‡ºä¾†,å†å°‡ä¿®æ”¹å€¼å­˜å›
 		Course course = courseOp.get();
 		course = new Course(id, name, day, start, end, credit);
 		return courseDao.save(course);
 
 	}
 
-	// §R°£½Òµ{
+	// åˆªé™¤èª²ç¨‹
 	@Override
 	public CourseRes deleteCourse(String id) {
 		CourseRes res = new CourseRes();
-		// §PÂ_ID¬O§_¦s¦b
+		// åˆ¤æ–·IDæ˜¯å¦å­˜åœ¨
 		Optional<Course> courseOp = courseDao.findById(id);
 		if (courseOp.isPresent()) {
-			// ¦s¦b´N±N¨ä¸ê®Æ§R°£
+			// å­˜åœ¨å°±å°‡å…¶è³‡æ–™åˆªé™¤
 			courseDao.deleteById(id);
 			res.setMessage(CourseRtnCode.SUCCESS.getMessage());
 			return res;
@@ -74,11 +74,11 @@ public class CourseServiceImpl implements CourseService {
 		return res;
 	}
 
-	// ¥ÎId©Î¦WºÙ·j´M½Òµ{
+	// ç”¨Idæˆ–åç¨±æœå°‹èª²ç¨‹
 	@Override
 	public CourseRes findCourseByIdOrName(List<String> ids, List<String> names) {
 		CourseRes res = new CourseRes();
-		// §Q¥Î¦bDao·s¼Wªº¤èªk´M§ä
+		// åˆ©ç”¨åœ¨Daoæ–°å¢çš„æ–¹æ³•å°‹æ‰¾
 		List<Course> serchResult = courseDao.findByIdInOrNameIn(ids, names);
 		if (serchResult.isEmpty()) {
 			res.setMessage(CourseRtnCode.NO_RESULT.getMessage());
@@ -89,42 +89,42 @@ public class CourseServiceImpl implements CourseService {
 		return res;
 	}
 
-	// ·s¼W¾Ç¥Í
+	// æ–°å¢å­¸ç”Ÿ
 	@Override
 	public Student createStudent(String id, String name) {
-		// §PÂ_ID¬O§_¦s¦b
+		// åˆ¤æ–·IDæ˜¯å¦å­˜åœ¨
 		if (studentDao.existsById(id)) {
 			return null;
 		}
-		// ±N¿é¤J­È±a¤J
+		// å°‡è¼¸å…¥å€¼å¸¶å…¥
 		Student student = new Student(id, name);
 		return studentDao.save(student);
 	}
 
-	// ­×§ï¾Ç¥Í¦W¤l
+	// ä¿®æ”¹å­¸ç”Ÿåå­
 	@Override
 	public Student updateStudent(String id, String name) {
-		// §PÂ_ID¬O§_¦s¦b
+		// åˆ¤æ–·IDæ˜¯å¦å­˜åœ¨
 		Optional<Student> studentOp = studentDao.findById(id);
 		if (!studentOp.isPresent()) {
 			return null;
 		}
 		Student student = studentOp.get();
-		// ±N¿é¤J­È±a¤J
+		// å°‡è¼¸å…¥å€¼å¸¶å…¥
 		student = new Student(id, name);
 		return studentDao.save(student);
 
 	}
 
-	// §R°£¾Ç¥Í
+	// åˆªé™¤å­¸ç”Ÿ
 	@Override
 	public CourseRes deleteStudent(String id) {
-		// ±N¿é¤J­È±a¤J
+		// å°‡è¼¸å…¥å€¼å¸¶å…¥
 		Optional<Student> studentOp = studentDao.findById(id);
 		CourseRes res = new CourseRes();
 		if (studentOp.isPresent()) {
 			Student student = studentOp.get();
-			// ¾Ç¥Í¶·°h§¹½Ò¤~¯à°÷§R°£
+			// å­¸ç”Ÿé ˆé€€å®Œèª²æ‰èƒ½å¤ åˆªé™¤
 			if (!StringUtils.hasText(student.getCourseId())) {
 				studentDao.delete(student);
 				res.setMessage(CourseRtnCode.SUCCESS.getMessage());
@@ -138,33 +138,33 @@ public class CourseServiceImpl implements CourseService {
 		return res;
 	}
 
-	// ¿ï½Ò
+	// é¸èª²
 	@Override
 	public CourseRes courseSelection(String studentId, List<String> courseSelList) {
 		int totalCredit = 0;
 		CourseRes res = new CourseRes();
 		List<String> messageList = new ArrayList<>();
-		// §PÂ_¾Ç¥ÍID¬O§_¦s¦b
+		// åˆ¤æ–·å­¸ç”ŸIDæ˜¯å¦å­˜åœ¨
 		Optional<Student> studentOp = studentDao.findById(studentId);
 		if (!studentOp.isPresent()) {
 			res.setMessage(CourseRtnCode.STUDENT_ID_NOT_EXIST.getMessage());
 			return res;
 		}
 		Student student = studentOp.get();
-		// ±N¾Ç¥ÍDB¸Ì¦sªº½Òµ{ID¥HcourseIdStr±µ¦¬
+		// å°‡å­¸ç”ŸDBè£¡å­˜çš„èª²ç¨‹IDä»¥courseIdStræ¥æ”¶
 		String courseIdStr = student.getCourseId();
 		Set<String> courseSet = new HashSet<>();
 
-		// ¿ï½ÒIDÀË¬d,¨Ã±N²Å¦X¸ê®æªº½Òµ{ID³£©ñ¶iSet
+		// é¸èª²IDæª¢æŸ¥,ä¸¦å°‡ç¬¦åˆè³‡æ ¼çš„èª²ç¨‹IDéƒ½æ”¾é€²Set
 		courseSelectIdCheck(courseSelList, messageList, courseSet, courseIdStr);
 
-		// ÀË¬d¬O§_¬Û¦P¦WºÙ¤Î½Ä°ó,¨Ã²¾°£
+		// æª¢æŸ¥æ˜¯å¦ç›¸åŒåç¨±åŠè¡å ‚,ä¸¦ç§»é™¤
 		courseTimeAndNameCheck(messageList, courseSet, courseIdStr);
 
-		// §PÂ_¿ïªº½Ò¬O§_³Q¶W¹L¤­¤H¿ï¹L¤F
+		// åˆ¤æ–·é¸çš„èª²æ˜¯å¦è¢«è¶…éäº”äººé¸éäº†
 		courseSelectByStudentCount(courseSet, messageList, courseIdStr);
 
-		// ­YcourseSet¬°ªÅ«h¥Nªí¨S¦³¿ï¥ô¦ó½Òµ{
+		// è‹¥courseSetç‚ºç©ºå‰‡ä»£è¡¨æ²’æœ‰é¸ä»»ä½•èª²ç¨‹
 		if (courseSet.isEmpty()) {
 			res.setStudentId(student.getId());
 			res.setStudentName(student.getName());
@@ -172,9 +172,9 @@ public class CourseServiceImpl implements CourseService {
 			res.setMessage(CourseRtnCode.NO_COURSE_SELECTED.getMessage());
 			return res;
 		}
-		// ¨ú±o¾Ç¥Í¿ï½Ò¸Ô²Ó½Òµ{¸ê®Æ
+		// å–å¾—å­¸ç”Ÿé¸èª²è©³ç´°èª²ç¨‹è³‡æ–™
 		List<Course> allStudentCourse = courseDao.findAllById(courseSet);
-		// ­pºâÁ`¾Ç¤À,¶W¹L10²×¤î¦¹¥[¿ï
+		// è¨ˆç®—ç¸½å­¸åˆ†,è¶…é10çµ‚æ­¢æ­¤åŠ é¸
 		for (Course course : allStudentCourse) {
 			totalCredit += course.getCredit();
 		}
@@ -182,16 +182,16 @@ public class CourseServiceImpl implements CourseService {
 			res.setMessage(CourseRtnCode.CREDIT_TOTAL_OVER.getMessage());
 			return res;
 		}
-		// ­YmessageList¬°ªÅ ªí¥Ü¨S¦³¥ô¦óÄµ§i¸ê°T
+		// è‹¥messageListç‚ºç©º è¡¨ç¤ºæ²’æœ‰ä»»ä½•è­¦å‘Šè³‡è¨Š
 		if (messageList.isEmpty()) {
 			res.setMessage(CourseRtnCode.SUCCESS.getMessage());
-			// ¨S³]¦¨null¦bpostman¤W¤´·|Åã¥Ü¤¤¬A¸¹
+			// æ²’è¨­æˆnullåœ¨postmanä¸Šä»æœƒé¡¯ç¤ºä¸­æ‹¬è™Ÿ
 			messageList = null;
 		} else {
 			res.setMessage(CourseRtnCode.WARNING.getMessage());
 		}
 		res.setMessageList(messageList);
-		// ±NListÂà¦¨¦r¦ê¦s¦^DB
+		// å°‡Listè½‰æˆå­—ä¸²å­˜å›DB
 		student.setCourseId(courseSet.toString().substring(1, courseSet.toString().length() - 1));
 		studentDao.save(student);
 
@@ -204,13 +204,13 @@ public class CourseServiceImpl implements CourseService {
 		return res;
 	}
 
-	// ¿ï½ÒIDÀË¬d,¨Ã±N²Å¦X¸ê®æªº½Òµ{ID³£©ñ¶iSet
+	// é¸èª²IDæª¢æŸ¥,ä¸¦å°‡ç¬¦åˆè³‡æ ¼çš„èª²ç¨‹IDéƒ½æ”¾é€²Set
 	private void courseSelectIdCheck(List<String> courseSelList, List<String> messageList, Set<String> courseSet,
 			String courseIdStr) {
 
 		List<Course> selCourseInfo = courseDao.findAllById(courseSelList);
 
-		// §ä¥X¤£¦bDBªº½Òµ{,±N¦³¦s¦bªº½Òµ{¥[¶iSet¸Ì,¨Ãremove courseSelList¸Ì¦³¦s¦bDBªº½Òµ{
+		// æ‰¾å‡ºä¸åœ¨DBçš„èª²ç¨‹,å°‡æœ‰å­˜åœ¨çš„èª²ç¨‹åŠ é€²Setè£¡,ä¸¦remove courseSelListè£¡æœ‰å­˜åœ¨DBçš„èª²ç¨‹
 		for (Course course : selCourseInfo) {
 			if (courseSelList.contains(course.getId())) {
 				courseSelList.remove(course.getId());
@@ -218,36 +218,36 @@ public class CourseServiceImpl implements CourseService {
 			}
 		}
 
-		// courseSelList ·|³Ñ¤U¤£¦bDB¸Ìªº½Òµ{
+		// courseSelList æœƒå‰©ä¸‹ä¸åœ¨DBè£¡çš„èª²ç¨‹
 		if (!courseSelList.isEmpty()) {
 			messageList.add(courseSelList.toString().substring(1, courseSelList.toString().length() - 1) + " "
 					+ CourseRtnCode.COURSE_NOT_EXIST.getMessage());
 		}
 		String[] courseIdArray;
-		// §ä¥X­«½ÆIDªº½Òµ{
+		// æ‰¾å‡ºé‡è¤‡IDçš„èª²ç¨‹
 		if (StringUtils.hasText(courseIdStr)) {
 			for (String str : courseSet) {
 				if (courseIdStr.contains(str.trim())) {
 					messageList.add(str.trim() + " " + CourseRtnCode.SAME_ID_COURSE_SELECTED.getMessage());
 				}
 			}
-			// ±N¾Ç¥Í­ì¦³½Òµ{ªº¦r¦êÂà¦¨°}¦C ¦A¥[¶iSet
+			// å°‡å­¸ç”ŸåŸæœ‰èª²ç¨‹çš„å­—ä¸²è½‰æˆé™£åˆ— å†åŠ é€²Set
 			courseIdArray = courseIdStr.split(",");
 			for (String item : courseIdArray) {
 				courseSet.add(item.trim());
 			}
 		} else {
-			// ¦pªG¾Ç¥Í­ì¥»¨S¿ï¥ô¦ó½Ò,µ¹¤@­ÓªÅ¦r¦êÁ×§K«á­±¨Ï¥Î®É¦]null¦Ó¥X¿ù
+			// å¦‚æœå­¸ç”ŸåŸæœ¬æ²’é¸ä»»ä½•èª²,çµ¦ä¸€å€‹ç©ºå­—ä¸²é¿å…å¾Œé¢ä½¿ç”¨æ™‚å› nullè€Œå‡ºéŒ¯
 			courseIdStr = "";
 		}
 	}
 
-	// ÀË¬d½Ä°ó©M¦WºÙ¬Û¦Pªº½Òµ{
+	// æª¢æŸ¥è¡å ‚å’Œåç¨±ç›¸åŒçš„èª²ç¨‹
 	private void courseTimeAndNameCheck(List<String> messageList, Set<String> courseSet, String courseIdStr) {
-		// SetÂà¦¨List ¤è«K¨Ï¥Îindex¦ì¸m¨ú­È
+		// Setè½‰æˆList æ–¹ä¾¿ä½¿ç”¨indexä½ç½®å–å€¼
 		List<String> courseSetToList = new ArrayList<>(courseSet);
 		List<Course> myAllCourseList = courseDao.findAllById(courseSetToList);
-		// ¹ï¦P¤@Listªº¸ê®Æ¤¬¬Û¤ñ¸û
+		// å°åŒä¸€Listçš„è³‡æ–™äº’ç›¸æ¯”è¼ƒ
 		for (int i = 0; i < myAllCourseList.size() - 1; i++) {
 
 			Course courseA = myAllCourseList.get(i);
@@ -255,16 +255,16 @@ public class CourseServiceImpl implements CourseService {
 
 				Course courseB = myAllCourseList.get(j);
 
-				// ½Òµ{¦WºÙ­«½Æ±Æ°£
+				// èª²ç¨‹åç¨±é‡è¤‡æ’é™¤
 				if (courseA.getName().equalsIgnoreCase(courseB.getName())) {
-					// ±Æ°£±¼·s¼Wªº­«½Æ¦WºÙ½Òµ{
+					// æ’é™¤æ‰æ–°å¢çš„é‡è¤‡åç¨±èª²ç¨‹
 					messageList.add(courseContainCheck(courseA, courseB, courseSet, courseIdStr)
 							+ CourseRtnCode.SAME_NAME_COURSE_SELECTED.getMessage());
 				}
 
-				// ½Ä°ó±Æ°£
+				// è¡å ‚æ’é™¤
 				if (courseA.getDay() == courseB.getDay()) {
-					// ±Æ°£±¼·s¼Wªº½Ä°ó½Òµ{
+					// æ’é™¤æ‰æ–°å¢çš„è¡å ‚èª²ç¨‹
 					if (!(courseA.getStart() >= courseB.getEnd() || courseA.getEnd() <= courseB.getStart())) {
 						messageList.add(courseContainCheck(courseA, courseB, courseSet, courseIdStr)
 								+ CourseRtnCode.CLASS_TIME_CONFLICT.getMessage());
@@ -274,23 +274,23 @@ public class CourseServiceImpl implements CourseService {
 		}
 	}
 
-	// §PÂ_¨â½Òµ{¬°­ì¦³ªº©Î·s¿ïªº,¥u¦³¦b½Òµ{¦WºÙ­«½Æ©Î½Ä°ó®É¤~·|©I¥s¦¹¤èªk
+	// åˆ¤æ–·å…©èª²ç¨‹ç‚ºåŸæœ‰çš„æˆ–æ–°é¸çš„,åªæœ‰åœ¨èª²ç¨‹åç¨±é‡è¤‡æˆ–è¡å ‚æ™‚æ‰æœƒå‘¼å«æ­¤æ–¹æ³•
 	private String courseContainCheck(Course courseA, Course courseB, Set<String> courseSet, String courseIdStr) {
 		String failMsg;
-		// ¥u±Æ°£·s¿ïªº
-		// ­Y½Òµ{A©MB½Ä°ó,¦pªGA¬O­ì¦³ªºªº¨ºB´N¬O·s¿ïªº,©Ò¥H¦bSet¤¤²¾°£±¼B
+		// åªæ’é™¤æ–°é¸çš„
+		// è‹¥èª²ç¨‹Aå’ŒBè¡å ‚,å¦‚æœAæ˜¯åŸæœ‰çš„çš„é‚£Bå°±æ˜¯æ–°é¸çš„,æ‰€ä»¥åœ¨Setä¸­ç§»é™¤æ‰B
 		if (courseIdStr.contains(courseA.getId())) {
 			courseSet.remove(courseB.getId());
 			failMsg = courseB.getId() + " ";
 		}
-		// ­YA¸òB³£¤£¬O­ì¦³ªº,«h³£¬O·s¿ïªº,¦]¦¹¬Ò±Æ°£
+		// è‹¥Aè·ŸBéƒ½ä¸æ˜¯åŸæœ‰çš„,å‰‡éƒ½æ˜¯æ–°é¸çš„,å› æ­¤çš†æ’é™¤
 		else if (!courseIdStr.contains(courseA.getId()) && !courseIdStr.contains(courseB.getId())) {
 			courseSet.remove(courseA.getId());
 			courseSet.remove(courseB.getId());
 			failMsg = courseA.getId() + " " + courseB.getId() + " ";
 
 		}
-		// ­Y¤£¬O¥H¤W±ø¥ó,«hA¬O·s¿ïªº,±N¥L±Æ°£
+		// è‹¥ä¸æ˜¯ä»¥ä¸Šæ¢ä»¶,å‰‡Aæ˜¯æ–°é¸çš„,å°‡ä»–æ’é™¤
 		else {
 			courseSet.remove(courseA.getId());
 			failMsg = courseA.getId() + " ";
@@ -298,15 +298,15 @@ public class CourseServiceImpl implements CourseService {
 		return failMsg;
 	}
 
-	// §PÂ_¿ïªº½Ò¬O§_³Q¶W¹L¤­¤H¿ï¹L¤F
+	// åˆ¤æ–·é¸çš„èª²æ˜¯å¦è¢«è¶…éäº”äººé¸éäº†
 	private void courseSelectByStudentCount(Set<String> courseSet, List<String> messageList, String courseIdStr) {
-		// §ä¥X©Ò¦³¾Ç¥Í¸ê®Æ
+		// æ‰¾å‡ºæ‰€æœ‰å­¸ç”Ÿè³‡æ–™
 		List<Student> studentList = studentDao.findAll();
 
-		// new¤@­Ómap Key=½Òµ{ID Value=¿ï½Ò¤H¼Æ
+		// newä¸€å€‹map Key=èª²ç¨‹ID Value=é¸èª²äººæ•¸
 		Map<String, Integer> courseCountMap = new HashMap<>();
 
-		// ±N©Ò¦³¾Ç¥Í¿ïªº©Ò¦³½Ò¦s¦¨List
+		// å°‡æ‰€æœ‰å­¸ç”Ÿé¸çš„æ‰€æœ‰èª²å­˜æˆList
 		List<String> allStudentCourse = new ArrayList<>();
 		for (Student stu : studentList) {
 			String allStudentCourseIdStr = stu.getCourseId();
@@ -315,17 +315,17 @@ public class CourseServiceImpl implements CourseService {
 			}
 		}
 
-		// ±N·s¿ïªº½Ò¤]©ñ¤JList
+		// å°‡æ–°é¸çš„èª²ä¹Ÿæ”¾å…¥List
 		allStudentCourse.addAll(courseSet);
 
-		// §PÂ_½Òµ{ID¦bList¤¤¦³´X­Ó=³Q¿ï¤F´X¦¸
-		// ¶W¹L¤­´N¾×±¼¦¹µ§¥[¿ï
+		// åˆ¤æ–·èª²ç¨‹IDåœ¨Listä¸­æœ‰å¹¾å€‹=è¢«é¸äº†å¹¾æ¬¡
+		// è¶…éäº”å°±æ“‹æ‰æ­¤ç­†åŠ é¸
 		for (String str : allStudentCourse) {
 			Integer selCount = courseCountMap.get(str);
 			if (selCount == null) {
 				selCount = 0;
 			}
-
+//			å°‡èª²ç¨‹IDè¢«é¸æ¬¡æ•¸5ä»¥ä¸‹çš„æ”¾å…¥Map
 			switch (selCount) {
 			case 0:
 			case 1:
@@ -335,6 +335,7 @@ public class CourseServiceImpl implements CourseService {
 				courseCountMap.put(str, selCount + 1);
 				break;
 			case 5:
+//			è¢«é¸äº”æ¬¡ä¸”åˆè¢«åŠ é¸å‰‡ä¸èƒ½è¢«åŠ é¸	
 				if (!courseIdStr.contains(str)) {
 					courseSet.remove(str);
 					messageList.add(str + " " + CourseRtnCode.COURSE_CANNOT_BE_SELECTED_MORE_THAN_5.getMessage());
@@ -345,45 +346,46 @@ public class CourseServiceImpl implements CourseService {
 
 	}
 
+//	é€€é¸
 	@Override
 	public CourseRes courseCancel(String studentId, List<String> courseDelList) {
 		CourseRes res = new CourseRes();
 		List<String> messageList = new ArrayList<>();
-		// §PÂ_¾Ç¥Í¸ê®Æ¬O§_¦s¦b
+		// åˆ¤æ–·å­¸ç”Ÿè³‡æ–™æ˜¯å¦å­˜åœ¨
 		Optional<Student> studentOp = studentDao.findById(studentId);
 		if (!studentOp.isPresent()) {
 			res.setMessage(CourseRtnCode.STUDENT_ID_NOT_EXIST.getMessage());
 			return res;
 		}
-		// ¾Ç¥Í¿ï½ÒID
+		// å­¸ç”Ÿé¸èª²ID
 		Student student = studentOp.get();
 		String courseIdStr = student.getCourseId();
-		// ¾Ç¥Í¥»¨Ó¨S¥ô¦ó½Ò,¦]¦¹µLªk°h¿ï
+		// å­¸ç”Ÿæœ¬ä¾†æ²’ä»»ä½•èª²,å› æ­¤ç„¡æ³•é€€é¸
 		if (courseIdStr.isEmpty()) {
 			res.setMessage(CourseRtnCode.NO_COURSE_SELECTED.getMessage());
 			return res;
 		}
-		// ¾Ç¥Í½Ò½Òµ{ID¦r¦êÂà¦¨°}¦C,¦A©ñ¤JList
+		// å­¸ç”Ÿèª²èª²ç¨‹IDå­—ä¸²è½‰æˆé™£åˆ—,å†æ”¾å…¥List
 		List<String> courseList = courseStrToList(courseIdStr);
-		// §ä¥X°h¿ï²M³æ¤¤¾Ç¥Í­ì¥»´N¨S¦³ªº½Ò
+		// æ‰¾å‡ºé€€é¸æ¸…å–®ä¸­å­¸ç”ŸåŸæœ¬å°±æ²’æœ‰çš„èª²
 		for (String str : courseDelList) {
 			if (!courseIdStr.contains(str)) {
 				messageList.add(str + " " + CourseRtnCode.STUDENT_DONT_HAVE_THIS_COURSE.getMessage());
 			}
 		}
-		// ²¾°£courseList¸Ì¦³§tcourseDelListªº½Òµ{
+		// ç§»é™¤courseListè£¡æœ‰å«courseDelListçš„èª²ç¨‹
 		courseList.removeAll(courseDelList);
-		// ¨ú±o¾Ç¥Í¿ï½Ò¸Ô²Ó½Òµ{¸ê®Æ
+		// å–å¾—å­¸ç”Ÿé¸èª²è©³ç´°èª²ç¨‹è³‡æ–™
 		List<Course> studentCourseList = courseDao.findAllById(courseList);
-		// ±NListÂà¦¨¦r¦ê¦s¦^DB
+		// å°‡Listè½‰æˆå­—ä¸²å­˜å›DB
 		student.setCourseId(courseList.toString().substring(1, courseList.toString().length() - 1));
 		studentDao.save(student);
-		// °h§¹«á¨S¥ô¦ó½Ò,¦ı¦bpostman¤WÅã¥Ü·|¦³¤¤¬A¸¹,©Ò¥H³]¦¨null
+		// é€€å®Œå¾Œæ²’ä»»ä½•èª²,ä½†åœ¨postmanä¸Šé¡¯ç¤ºæœƒæœ‰ä¸­æ‹¬è™Ÿ,æ‰€ä»¥è¨­æˆnull
 		if (studentCourseList.isEmpty()) {
 			studentCourseList = null;
 		}
 
-		// ­YmessageList¬°ªÅ ªí¥Ü¨S¦³¥ô¦óÄµ§i¸ê°T
+		// è‹¥messageListç‚ºç©º è¡¨ç¤ºæ²’æœ‰ä»»ä½•è­¦å‘Šè³‡è¨Š
 		if (messageList.isEmpty()) {
 			res.setMessage(CourseRtnCode.SUCCESS.getMessage());
 			messageList = null;
@@ -401,28 +403,28 @@ public class CourseServiceImpl implements CourseService {
 	@Override
 	public CourseRes findStudentInfo(String studentId) {
 		int studentCredit = 0;
-		// §PÂ_¾Ç¥Í¸ê®Æ¬O§_¦s¦b
+		// åˆ¤æ–·å­¸ç”Ÿè³‡æ–™æ˜¯å¦å­˜åœ¨
 		CourseRes res = new CourseRes();
 		Optional<Student> studentOp = studentDao.findById(studentId);
 		if (!studentOp.isPresent()) {
 			res.setMessage(CourseRtnCode.ID_NOT_EXIST.getMessage());
 			return res;
 		}
-		// ¨ú¥X¾Ç¥Í¿ï½Ò¸ê®Æ
+		// å–å‡ºå­¸ç”Ÿé¸èª²è³‡æ–™
 		Student student = studentOp.get();
 		String courseIdStr = student.getCourseId();
-		// ¨S¿ï¥ô¦ó½Ò ª½±µ¦^¶Ç
+		// æ²’é¸ä»»ä½•èª² ç›´æ¥å›å‚³
 		if (courseIdStr.isEmpty()) {
 			res.setStudentId(student.getId());
 			res.setStudentName(student.getName());
 			res.setMessage(CourseRtnCode.NO_COURSE_SELECTED.getMessage());
 			return res;
 		}
-		// ¾Ç¥Í½Ò½Òµ{ID¦r¦êÂà¦¨°}¦C,¦A©ñ¤JList
+		// å­¸ç”Ÿèª²èª²ç¨‹IDå­—ä¸²è½‰æˆé™£åˆ—,å†æ”¾å…¥List
 		List<String> courseList = courseStrToList(courseIdStr);
-		// ¨ú±o¾Ç¥Í¿ï½Ò¸Ô²Ó½Òµ{¸ê®Æ
+		// å–å¾—å­¸ç”Ÿé¸èª²è©³ç´°èª²ç¨‹è³‡æ–™
 		List<Course> stuCourseList = courseDao.findAllById(courseList);
-		// ­pºâÁ`¾Ç¤À
+		// è¨ˆç®—ç¸½å­¸åˆ†
 		for (Course course : stuCourseList) {
 			studentCredit += course.getCredit();
 		}
@@ -435,13 +437,13 @@ public class CourseServiceImpl implements CourseService {
 		return res;
 	}
 
-	// ¾Ç¥Í½Ò½Òµ{ID¦r¦êÂà¦¨°}¦C,¦A©ñ¤JList
+	// å­¸ç”Ÿèª²èª²ç¨‹IDå­—ä¸²è½‰æˆé™£åˆ—,å†æ”¾å…¥List
 	private List<String> courseStrToList(String courseIdStr) {
-		// ¥Î³r¸¹±N¦r¦ê¤º¤£¦P½Òµ{¤Á¶}¸Ë¤J°}¦C
+		// ç”¨é€—è™Ÿå°‡å­—ä¸²å…§ä¸åŒèª²ç¨‹åˆ‡é–‹è£å…¥é™£åˆ—
 		String[] courseIdArray = courseIdStr.split(",");
 		List<String> courseList = new ArrayList<>();
 
-		// ±N°}¦C¤º¸ê®Æ¦s¤JList
+		// å°‡é™£åˆ—å…§è³‡æ–™å­˜å…¥List
 		for (String item : courseIdArray) {
 			courseList.add(item.trim());
 		}
